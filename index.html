@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>进度条</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			.percent-box {
+				width: 500px;
+				height: 15px;
+				background: #eee;
+				margin: 20px;
+				position: relative;
+				cursor: pointer;
+				border-radius: 10px;
+			}
+			
+			.percent {
+				width: 0;
+				height: 100%;
+				background: green;
+				border-radius: 10px;
+			}
+			
+			.num {
+				position: absolute;
+				right: 0;
+				top: -20px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="percent-box">
+			<div class="percent"></div>
+			<span class="num"></span>
+		</div>
+		<script src="jquery.min.js"></script>
+		<script>
+			;(function() {
+			    var isFunction = function(fun) {
+					return typeof fun === 'function';
+                };
+				// 1，方法：
+				function  LoadPercent(config) {
+				    this.config = $.extend({},{
+				        resource:[],
+                        progress:null,
+                        complete:null
+					},config);
+					this.status = 0;//加载器的状态，0：未启动   1：正在加载   2：加载完毕
+					this.total = this.config.resource.length || 0;//资源总数
+                    this.currentIndex = 0; //当前正在加载的资源索引
+                };
+                LoadPercent.prototype.CountScale = function() {
+                    return ((this.currentIndex+1) / this.total *100).toFixed(0);
+                };
+                LoadPercent.prototype.loaded = function() {
+                    if(isFunction(this.config.progress)){
+                        this.option.progress(++this.currentIndex, this.total);
+                    }
+                    //加载完毕
+                    if(this.currentIndex===this.total){
+                        if(isFunction(this.option.complete)){
+                            this.option.complete(this.total);
+                        }
+                    }
+                };
+
+
+
+
+
+                function PercentboxProp($this){
+					this.bWidth = $this.width();
+				};
+				PercentboxProp.prototype.CountScale = function(width) {
+					return (width / this.bWidth *100).toFixed(0);
+				}
+				
+				function lyxPercent(opt) {
+					// 2，业务代码
+					var percentBox = opt && opt.box || ".percent-box",
+						percent = $(percentBox).find(".percent"),
+						num = $(percentBox).find(".num");
+					
+					percent.width(function() { //页面初始化时，进度条自动渲染
+						var $this = $(this),
+							$this_parent = $this.parent(".percent-box");
+						 	propObj = new PercentboxProp($this_parent),
+						 	bwidth = propObj.bWidth,
+						 	dwidth = propObj.dWidth,
+						 	trueWidth = bwidth*dwidth /100;
+							
+						animateFn($this, trueWidth);
+						if(opt && opt.single) opt.single($this);
+					});
+					num.html(function() { //页面初始化时，百分比数自动渲染
+						var $this = $(this),
+						    $this_parent = $this.parent(".percent-box"),
+							propObj = new PercentboxProp($this_parent),
+							dwidth = propObj.dWidth;
+						return dwidth + "%";
+					});
+
+					// 3，事件
+					$(percentBox).bind({
+						mousemove: function(e) {
+							var $this = $(this),
+								e = e || window.event,
+								positionObj = new PercentboxPosition(e),
+								newWidth = positionObj.newWidth,
+								newNum = positionObj.CountScale(newWidth);
+							$this.find(".num").html(newNum + "%");
+						},
+						mouseleave: function(e) {
+							var $this = $(this),
+								originNum = $this.find(".percent").data("width");
+							$this.find(".num").html(originNum + "%");
+						},
+						click: function(e) {
+							var $this = $(this),
+								e = e || window.event,
+								positionObj = new PercentboxPosition(e),
+								newWidth = positionObj.newWidth,
+								newNum = positionObj.CountScale(newWidth),
+								thisPercent = $this.find(".percent");
+							$this.find(".num").html(newNum + "%");
+							thisPercent.data("width", newNum);
+							animateFn(thisPercent, newWidth);
+							if(opt && opt.click) opt.click();//点击后的回调
+						}
+					});
+
+					function animateFn(e, width) { //初始化渲染
+						e.animate({
+							width: width
+						}, 800);
+					};
+				}
+				
+				window.lyxPercent = lyxPercent;
+			})();
+			$(function(){
+				lyxPercent({
+					box : "",
+					single : function($this){
+						console.log($this)
+					},
+					click: function() { //点击后的回调
+						console.log("a")
+					}
+				}); //为页面上进度条的调用
+			});
+		</script>
+	</body>
+
+</html>
