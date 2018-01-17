@@ -46,6 +46,7 @@
 			    var isFunction = function(fun) {
 					return typeof fun === 'function';
                 };
+
 				// 1，方法：
 				function  LoadPercent(config) {
 				    this.config = $.extend({},{
@@ -53,21 +54,31 @@
                         progress:null,
                         complete:null
 					},config);
-					this.status = 0;//加载器的状态，0：未启动   1：正在加载   2：加载完毕
 					this.total = this.config.resource.length || 0;//资源总数
                     this.currentIndex = 0; //当前正在加载的资源索引
                 };
-                LoadPercent.prototype.CountScale = function() {
-                    return ((this.currentIndex+1) / this.total *100).toFixed(0);
+                LoadPercent.prototype.countScale = function(index) {
+                    return (index / this.total *100).toFixed(0);
                 };
+				LoadPercent.prototype.start = function() {
+					var _this = this,
+						resource = _this.config.resource,
+						resourceLen = resource.length;
+					for(var i = 0; i<resourceLen; i++){
+						var url = resource[i];
+						var image = new Image();
+						image.onload = function(){_this.loaded();};
+						image.src = url;
+					}
+				};
                 LoadPercent.prototype.loaded = function() {
                     if(isFunction(this.config.progress)){
-                        this.option.progress(++this.currentIndex, this.total);
+                        this.config.progress(++this.currentIndex, this.total);
                     }
                     //加载完毕
                     if(this.currentIndex===this.total){
-                        if(isFunction(this.option.complete)){
-                            this.option.complete(this.total);
+                        if(isFunction(this.config.complete)){
+                            this.config.complete(this.total);
                         }
                     }
                 };
@@ -145,17 +156,28 @@
 				}
 				
 				window.lyxPercent = lyxPercent;
+				window.LoadPercent = LoadPercent;
 			})();
 			$(function(){
-				lyxPercent({
-					box : "",
-					single : function($this){
-						console.log($this)
-					},
-					click: function() { //点击后的回调
-						console.log("a")
-					}
-				}); //为页面上进度条的调用
+				// lyxPercent({
+				// 	box : "",
+				// 	single : function($this){
+				// 		console.log($this)
+				// 	},
+				// 	click: function() { //点击后的回调
+				// 		console.log("a")
+				// 	}
+				// }); //为页面上进度条的调用
+				var loader = new LoadPercent({
+				        resource:['https://static.jintoushou.com/001/180104134042000221.png','https://static.jintoushou.com/001/171229110548000091.jpeg','https://static.jintoushou.com/001/170911135128000111.jpeg','https://static.jintoushou.com/001/171220160217000391.jpeg','https://static.jintoushou.com/001/171220160011000381.jpeg'],
+                        progress:function(currIdx,totle){
+							console.log(currIdx/totle*100)
+						},
+                        complete:function(){
+							console.log('all')
+						}
+					});
+					loader.start();
 			});
 		</script>
 	</body>
