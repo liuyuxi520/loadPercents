@@ -41,13 +41,13 @@
             var url = _this.config.audioResource[i];
 
             var audioElement = document.createElement('audio');
-            audioElement.setAttribute('src', url);
+            audioElement.src = url;
             audioElement.setAttribute('preload', 'preload');
-            audioElement.onload = function() {
-                if(audioElement.readyState > 0){
+            audioElement.addEventListener('loadeddata',function() {
+                if(audioElement.readyState >= 2){
                     _this.loaded();
                 }
-            };
+            });
         }
     };
     LoadPercent.prototype.loaded = function() {

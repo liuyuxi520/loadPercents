@@ -58,7 +58,7 @@
 		<script>
 				var loader = new LoadPercent({
 				        imgResource:['https://static.jintoushou.com/001/180104134042000221.png','https://static.jintoushou.com/001/171229110548000091.jpeg','https://static.jintoushou.com/001/170911135128000111.jpeg','https://static.jintoushou.com/001/171220160217000391.jpeg','https://static.jintoushou.com/001/171220160011000381.jpeg'],
-//                        audioResource:['http://www.w3school.com.cn/i/horse.mp3'],
+                        audioResource:['http://www.w3school.com.cn/i/horse.mp3'],
 						begin:function(online) {//判断网络是否连接
 							if(!online){
 							    alert('网络未连接')
@@ -74,7 +74,7 @@
                         complete:function(){//加载所有资源完成后回调
 							setTimeout(function() {
 								document.getElementsByClassName('js-body')[0].style.display = 'none';
-                            },1000)
+                            },100)
 
 						}
 				});
