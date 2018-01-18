@@ -10,6 +10,7 @@
         this.config = {
             imgResource:config && config.imgResource || [],
             audioResource:config && config.audioResource || [],
+            baseUrl:config && config.baseUrl || '' ,
             begin:config && config.begin || null,
             progress:config && config.progress || null,
             complete:config && config.complete || null
@@ -23,6 +24,7 @@
     LoadPercent.prototype.start = function() {
         var _this = this,
             total = _this.tatal,
+            baseUrl = this.config.baseUrl,
             imgResourceLen = _this.config.imgResource.length,
             audioResourceLen = _this.config.audioResource.length;
 
@@ -34,14 +36,20 @@
         for(var i = 0; i<imgResourceLen; i++){//imgResource load
             var url = _this.config.imgResource[i];
             var image = new Image();
+            if(url.indexOf('http') !== 0 || url.indexOf('https') !== 0){
+                url = baseUrl + url;
+            }
             image.onload = function(){_this.loaded();};
             image.src = url;
         }
         for(var i = 0; i<audioResourceLen; i++){//audioResource load
-            var url = _this.config.audioResource[i];
-
+            var url2 = _this.config.audioResource[i];
             var audioElement = document.createElement('audio');
-            audioElement.src = url;
+
+            if(url2.indexOf('http') !== 0 || url2.indexOf('https') !== 0){
+                url2 = baseUrl + url2;
+            }
+            audioElement.src = url2;
             audioElement.setAttribute('preload', 'preload');
             audioElement.addEventListener('loadeddata',function() {
                 if(audioElement.readyState >= 2){
@@ -55,7 +63,7 @@
             var process = this.countScale(++this.currentIndex)
             this.config.progress(process);
         }
-        //加载完毕
+        //load complete
         if(this.currentIndex===this.total){
             if(isFunction(this.config.complete)){
                 this.config.complete(this.total);
