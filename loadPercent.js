@@ -36,7 +36,7 @@
         for(var i = 0; i<imgResourceLen; i++){//imgResource load
             var url = _this.config.imgResource[i];
             var image = new Image();
-            if(url.indexOf('http') !== 0 || url.indexOf('https') !== 0){
+            if(url.indexOf('http') !== 0){
                 url = baseUrl + url;
             }
             image.onload = function(){_this.loaded();};
@@ -46,7 +46,7 @@
             var url2 = _this.config.audioResource[i];
             var audioElement = document.createElement('audio');
 
-            if(url2.indexOf('http') !== 0 || url2.indexOf('https') !== 0){
+            if(url2.indexOf('http') !== 0){
                 url2 = baseUrl + url2;
             }
             audioElement.src = url2;
