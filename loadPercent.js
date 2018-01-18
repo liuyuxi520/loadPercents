@@ -1,22 +1,29 @@
 /**
- * Created by liufeifeng on 1/18/18.
+ * 
+ * author: liuyuxi
+ * time: 2018.1.18
  */
 ;(function() {
     var isFunction = function(fun) {
         return typeof fun === 'function';
     };
-
+    /**
+     * 
+     * @param {*} config 
+     */
     function  LoadPercent(config) {
+        config = config && Object.prototype.toString.apply(config).indexOf('Object') > -1 ? config : {};
         this.config = {
-            imgResource:config && config.imgResource || [],
-            audioResource:config && config.audioResource || [],
-            baseUrl:config && config.baseUrl || '' ,
-            begin:config && config.begin || null,
-            progress:config && config.progress || null,
-            complete:config && config.complete || null
+            imgResource: config.imgResource || [],
+            audioResource: config.audioResource || [],
+            baseUrl: config.baseUrl || '' ,
+            begin: config.begin,
+            progress: config.progress,
+            complete: config.complete,
         };
         this.total = this.config.imgResource.length + this.config.audioResource.length || 0;//资源总数
         this.currentIndex = 0; //当前正在加载的资源索引
+        this.start();
     };
     LoadPercent.prototype.countScale = function(index) {
         return Math.round(index / this.total *100);
