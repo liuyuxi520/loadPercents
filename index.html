@@ -8,177 +8,78 @@
 			* {
 				margin: 0;
 				padding: 0;
+				width:100%;
+				height: 100%;
+				font-size: 14px;
 			}
-			
+			.gift_load {
+				background: palevioletred;
+				height: 100%;
+				overflow: hidden;
+			}
 			.percent-box {
-				width: 500px;
-				height: 15px;
-				background: #eee;
-				margin: 20px;
+				width: 80%;
+				height: 3rem;
+				padding: 1.5rem 2rem;
+				background:#25366B;
+				margin: 40% auto;
 				position: relative;
 				cursor: pointer;
-				border-radius: 10px;
+				border-radius: 4rem;
 			}
 			
 			.percent {
-				width: 0;
+				width: 0%;
 				height: 100%;
-				background: green;
-				border-radius: 10px;
+				background: #FFBFBF;
+				border-radius: 2rem;
+				transition: all 0.5s;
 			}
 			
 			.num {
 				position: absolute;
-				right: 0;
-				top: -20px;
+				top: -4rem;
+				font-size: 3rem;
+				text-align: center;
+				color: #fff;
+				width:100%;
 			}
 		</style>
 	</head>
 
 	<body>
-		<div class="percent-box">
-			<div class="percent"></div>
-			<span class="num"></span>
+		<div class="js-body gift_load">
+			<div class="percent-box">
+				<div class="percent"></div>
+				<span class="num">0%</span>
+			</div>
 		</div>
-		<script src="jquery.min.js"></script>
+		<script src="loadPercent.js"></script>
 		<script>
-			;(function() {
-			    var isFunction = function(fun) {
-					return typeof fun === 'function';
-                };
-
-				// 1，方法：
-				function  LoadPercent(config) {
-				    this.config = $.extend({},{
-				        resource:[],
-                        progress:null,
-                        complete:null
-					},config);
-					this.total = this.config.resource.length || 0;//资源总数
-                    this.currentIndex = 0; //当前正在加载的资源索引
-                };
-                LoadPercent.prototype.countScale = function(index) {
-                    return (index / this.total *100).toFixed(0);
-                };
-				LoadPercent.prototype.start = function() {
-					var _this = this,
-						resource = _this.config.resource,
-						resourceLen = resource.length;
-					for(var i = 0; i<resourceLen; i++){
-						var url = resource[i];
-						var image = new Image();
-						image.onload = function(){_this.loaded();};
-						image.src = url;
-					}
-				};
-                LoadPercent.prototype.loaded = function() {
-                    if(isFunction(this.config.progress)){
-                        this.config.progress(++this.currentIndex, this.total);
-                    }
-                    //加载完毕
-                    if(this.currentIndex===this.total){
-                        if(isFunction(this.config.complete)){
-                            this.config.complete(this.total);
-                        }
-                    }
-                };
-
-
-
-
-
-                function PercentboxProp($this){
-					this.bWidth = $this.width();
-				};
-				PercentboxProp.prototype.CountScale = function(width) {
-					return (width / this.bWidth *100).toFixed(0);
-				}
-				
-				function lyxPercent(opt) {
-					// 2，业务代码
-					var percentBox = opt && opt.box || ".percent-box",
-						percent = $(percentBox).find(".percent"),
-						num = $(percentBox).find(".num");
-					
-					percent.width(function() { //页面初始化时，进度条自动渲染
-						var $this = $(this),
-							$this_parent = $this.parent(".percent-box");
-						 	propObj = new PercentboxProp($this_parent),
-						 	bwidth = propObj.bWidth,
-						 	dwidth = propObj.dWidth,
-						 	trueWidth = bwidth*dwidth /100;
-							
-						animateFn($this, trueWidth);
-						if(opt && opt.single) opt.single($this);
-					});
-					num.html(function() { //页面初始化时，百分比数自动渲染
-						var $this = $(this),
-						    $this_parent = $this.parent(".percent-box"),
-							propObj = new PercentboxProp($this_parent),
-							dwidth = propObj.dWidth;
-						return dwidth + "%";
-					});
-
-					// 3，事件
-					$(percentBox).bind({
-						mousemove: function(e) {
-							var $this = $(this),
-								e = e || window.event,
-								positionObj = new PercentboxPosition(e),
-								newWidth = positionObj.newWidth,
-								newNum = positionObj.CountScale(newWidth);
-							$this.find(".num").html(newNum + "%");
-						},
-						mouseleave: function(e) {
-							var $this = $(this),
-								originNum = $this.find(".percent").data("width");
-							$this.find(".num").html(originNum + "%");
-						},
-						click: function(e) {
-							var $this = $(this),
-								e = e || window.event,
-								positionObj = new PercentboxPosition(e),
-								newWidth = positionObj.newWidth,
-								newNum = positionObj.CountScale(newWidth),
-								thisPercent = $this.find(".percent");
-							$this.find(".num").html(newNum + "%");
-							thisPercent.data("width", newNum);
-							animateFn(thisPercent, newWidth);
-							if(opt && opt.click) opt.click();//点击后的回调
-						}
-					});
-
-					function animateFn(e, width) { //初始化渲染
-						e.animate({
-							width: width
-						}, 800);
-					};
-				}
-				
-				window.lyxPercent = lyxPercent;
-				window.LoadPercent = LoadPercent;
-			})();
-			$(function(){
-				// lyxPercent({
-				// 	box : "",
-				// 	single : function($this){
-				// 		console.log($this)
-				// 	},
-				// 	click: function() { //点击后的回调
-				// 		console.log("a")
-				// 	}
-				// }); //为页面上进度条的调用
 				var loader = new LoadPercent({
-				        resource:['https://static.jintoushou.com/001/180104134042000221.png','https://static.jintoushou.com/001/171229110548000091.jpeg','https://static.jintoushou.com/001/170911135128000111.jpeg','https://static.jintoushou.com/001/171220160217000391.jpeg','https://static.jintoushou.com/001/171220160011000381.jpeg'],
-                        progress:function(currIdx,totle){
-							console.log(currIdx/totle*100)
+				        imgResource:['https://static.jintoushou.com/001/180104134042000221.png','https://static.jintoushou.com/001/171229110548000091.jpeg','https://static.jintoushou.com/001/170911135128000111.jpeg','https://static.jintoushou.com/001/171220160217000391.jpeg','https://static.jintoushou.com/001/171220160011000381.jpeg'],
+//                        audioResource:['http://www.w3school.com.cn/i/horse.mp3'],
+						begin:function(online) {//判断网络是否连接
+							if(!online){
+							    alert('网络未连接')
+							}
+                        },
+						progress:function(process){//每加载一个资源后回调
+							console.log(process)
+							//进度条更新
+							var percentBox = document.getElementsByClassName('percent-box');
+							percentBox[0].children[0].style.width = process+'%';
+                            percentBox[0].children[1].innerHTML = process+'%'
 						},
-                        complete:function(){
-							console.log('all')
+                        complete:function(){//加载所有资源完成后回调
+							setTimeout(function() {
+								document.getElementsByClassName('js-body')[0].style.display = 'none';
+                            },1000)
+
 						}
-					});
-					loader.start();
-			});
+				});
+//                debugger
+				loader.start();
 		</script>
 	</body>
 
