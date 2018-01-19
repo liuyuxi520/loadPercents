@@ -68,19 +68,18 @@
 							'http://www.w3school.com.cn/i/horse.mp3'
 						],
 						baseUrl: 'https://static.jintoushou.com',
-						begin: function(online) {//判断网络是否连接
+						beginFn: function(online) {//判断网络是否连接
 							if(!online){
 							    alert('网络未连接')
 							}
                         },
-						progress:function(process){//每加载一个资源后回调
-							console.log(process)
+						progressFn:function(process){//每加载一个资源后回调
 							//进度条更新
 							var percentBox = document.getElementsByClassName('percent-box');
 							percentBox[0].children[0].style.width = process+'%';
                             percentBox[0].children[1].innerHTML = process+'%';
 						},
-                        complete:function(){//加载所有资源完成后回调
+                        completeFn:function(){//加载所有资源完成后回调
 							setTimeout(function() {
 								document.getElementsByClassName('js-body')[0].style.display = 'none';
                             },1000)
